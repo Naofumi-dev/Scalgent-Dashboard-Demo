@@ -28,8 +28,9 @@ export default function AILeadCard() {
     }, [messages, typing])
 
     useEffect(() => {
+        const apiUrl = import.meta.env.VITE_API_URL || ''
         // Fetch AI insights directly on load
-        fetch('/api/insights')
+        fetch(`${apiUrl}/api/insights`)
             .then(res => res.json())
             .then(data => {
                 if (data.insights && data.insights.length > 0) {
@@ -50,7 +51,8 @@ export default function AILeadCard() {
         setTyping(true)
 
         try {
-            const res = await fetch('/api/chat', {
+            const apiUrl = import.meta.env.VITE_API_URL || ''
+            const res = await fetch(`${apiUrl}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: userMsg }),

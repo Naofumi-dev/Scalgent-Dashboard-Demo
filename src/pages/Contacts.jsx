@@ -37,7 +37,8 @@ export default function Contacts() {
     const [contacts, setContacts] = useState(mockContacts)
 
     useEffect(() => {
-        fetch('/api/ghl/contacts')
+        const apiUrl = import.meta.env.VITE_API_URL || ''
+        fetch(`${apiUrl}/api/ghl/contacts`)
             .then(res => res.json())
             .then(data => {
                 if (data.contacts && data.contacts.length > 0) {

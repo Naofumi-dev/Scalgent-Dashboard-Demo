@@ -22,7 +22,8 @@ export default function Tasks() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        fetch('/api/airtable/tasks')
+        const apiUrl = import.meta.env.VITE_API_URL || ''
+        fetch(`${apiUrl}/api/airtable/tasks`)
             .then(res => res.json())
             .then(data => {
                 if (data.tasks) {

@@ -24,10 +24,10 @@ require('dotenv').config()
 const app = express()
 const server = http.createServer(app)
 const io = new Server(server, {
-    cors: { origin: ['http://localhost:5173', 'http://localhost:4173'], methods: ['GET', 'POST'] }
+    cors: { origin: ['http://localhost:5173', 'http://localhost:4173', 'https://scalgent-dashboard-demo.netlify.app', 'https://scalgent-dashboard-demo.netlify.app/'], methods: ['GET', 'POST'] }
 })
 
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:4173'] }))
+app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:4173', 'https://scalgent-dashboard-demo.netlify.app', 'https://scalgent-dashboard-demo.netlify.app/'] }))
 app.use(express.json())
 
 // ── Config ────────────────────────────────────────────────

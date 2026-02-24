@@ -1,0 +1,111 @@
+.sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    z-index: 100;
+    gap: 4px;
+}
+
+.sidebar-logo {
+    width: 40px;
+    height: 40px;
+    background: var(--coral);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-glow-coral);
+}
+
+.sidebar-logo-text {
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    align-items: center;
+}
+
+.sidebar-item {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+}
+
+.sidebar-item:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.sidebar-item.active {
+    background: var(--coral-dim);
+    color: var(--coral);
+}
+
+.sidebar-item.active::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: var(--coral);
+    border-radius: 0 3px 3px 0;
+}
+
+.sidebar-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.sidebar-avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--purple), var(--coral));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.sidebar-avatar:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+}

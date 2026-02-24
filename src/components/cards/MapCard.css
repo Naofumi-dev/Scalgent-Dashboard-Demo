@@ -1,0 +1,72 @@
+.map-card {
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+}
+
+.map-canvas {
+    flex: 1;
+    position: relative;
+    background: #1b2233;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    min-height: 160px;
+}
+
+.map-grid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.map-pin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 2;
+}
+
+.map-pin-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--coral);
+    border: 2px solid #fff;
+    box-shadow: 0 0 8px var(--coral);
+    transition: var(--transition);
+}
+
+.map-pin:hover .map-pin-dot {
+    transform: scale(1.3);
+}
+
+.map-pin.active .map-pin-dot {
+    background: #111;
+    border-color: var(--coral);
+    box-shadow: 0 0 12px var(--coral);
+}
+
+.map-pin-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    white-space: nowrap;
+    box-shadow: var(--shadow-card);
+    animation: slide-in-up 0.2s ease-out;
+}
+
+.map-pin-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--border-strong);
+}

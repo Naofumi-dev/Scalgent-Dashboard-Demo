@@ -1,0 +1,5 @@
+# This file keeps the outputs/ directory tracked by git
+# while its contents remain ignored (see .gitignore).
+#
+# Generated JSON files from execution scripts are written here.
+# Do not commit real output data.

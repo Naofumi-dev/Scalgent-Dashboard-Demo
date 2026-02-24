@@ -1,0 +1,39 @@
+.timing-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.timing-chart-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timing-svg {
+    width: 160px;
+    height: 160px;
+}
+
+.timing-legend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.timing-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.timing-time {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+}

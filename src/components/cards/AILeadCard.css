@@ -1,0 +1,132 @@
+.ai-card {
+    display: flex;
+    flex-direction: column;
+    grid-row: span 2;
+    gap: 0;
+}
+
+.ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+    max-height: 220px;
+    padding-right: 4px;
+}
+
+.ai-msg {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    animation: slide-in-up 0.25s ease-out;
+}
+
+.ai-msg.user {
+    flex-direction: row-reverse;
+}
+
+.ai-avatar {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--purple-dim);
+}
+
+.ai-bubble {
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: 12px 12px 12px 4px;
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    max-width: 85%;
+}
+
+.ai-msg.user .ai-bubble {
+    background: var(--purple-dim);
+    border-color: var(--purple);
+    color: var(--text-primary);
+    border-radius: 12px 12px 4px 12px;
+}
+
+.ai-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+/* Typing dots */
+.ai-typing {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 16px;
+}
+
+.ai-typing span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    animation: typing-dot 1.4s ease-in-out infinite;
+}
+
+.ai-typing span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.ai-typing span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing-dot {
+
+    0%,
+    60%,
+    100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateY(-4px);
+    }
+}
+
+.ai-suggestions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.ai-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 6px 8px;
+}
+
+.ai-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: inherit;
+}
+
+.ai-input::placeholder {
+    color: var(--text-muted);
+}

@@ -1,0 +1,70 @@
+.capacity-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.cap-days {
+    display: flex;
+    gap: 4px;
+    justify-content: space-between;
+}
+
+.cap-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+}
+
+.cap-day-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.cap-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.cap-day:hover .cap-circle {
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.cap-day.highlighted .cap-circle {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.cap-pct {
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.cap-legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cap-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cap-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}

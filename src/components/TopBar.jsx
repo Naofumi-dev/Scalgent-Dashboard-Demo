@@ -12,6 +12,7 @@ const pageTitles = {
 
 export default function TopBar() {
     const { pathname } = useLocation()
+    const navigate = useNavigate()
     const title = pageTitles[pathname] || 'Dashboard'
     const { user, logout } = useAuth()
 
@@ -39,10 +40,14 @@ export default function TopBar() {
 
             <div className="topbar-right">
                 {user?.role && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: user.role === 'Admin' ? 'rgba(168, 85, 247, 0.15)' : 'rgba(148, 163, 184, 0.1)', borderRadius: 20, border: `1px solid ${user.role === 'Admin' ? 'rgba(168, 85, 247, 0.3)' : 'rgba(148, 163, 184, 0.2)'}`, marginRight: 12 }}>
+                    <button
+                        onClick={() => navigate('/settings')}
+                        title="Manage Role & Settings"
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: user.role === 'Admin' ? 'rgba(168, 85, 247, 0.15)' : 'rgba(148, 163, 184, 0.1)', borderRadius: 20, border: `1px solid ${user.role === 'Admin' ? 'rgba(168, 85, 247, 0.3)' : 'rgba(148, 163, 184, 0.2)'}`, marginRight: 12, cursor: 'pointer' }}
+                    >
                         <Shield size={12} color={user.role === 'Admin' ? '#a855f7' : '#94a3b8'} />
                         <span style={{ fontSize: 11, fontWeight: 600, color: user.role === 'Admin' ? '#e9d5ff' : '#cbd5e1' }}>{user.role}</span>
-                    </div>
+                    </button>
                 )}
                 <div className="topbar-live-dot" title="Live sync active" />
                 <button className="btn btn-ghost btn-icon" title="Notifications">

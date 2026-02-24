@@ -1,8 +1,9 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import {
     LayoutDashboard, GitBranch, Box, BarChart2,
     Users, Settings, Plus, Map, CheckSquare
 } from 'lucide-react'
+import { useAuth } from '../lib/AuthContext'
 import './Sidebar.css'
 
 const navItems = [
@@ -11,11 +12,13 @@ const navItems = [
     { to: '/builder', icon: GitBranch, label: 'Builder' },
     { to: '/analytics', icon: BarChart2, label: 'Analytics' },
     { to: '/contacts', icon: Users, label: 'Contacts' },
-    { to: '#map', icon: Map, label: 'Map' },
-    { to: '#settings', icon: Settings, label: 'Settings' },
+    { to: '/map', icon: Map, label: 'Map' },
+    { to: '/settings', icon: Settings, label: 'Settings' },
 ]
 
 export default function Sidebar() {
+    const navigate = useNavigate()
+    const { user } = useAuth()
     return (
         <nav className="sidebar">
             {/* Logo */}
@@ -46,13 +49,13 @@ export default function Sidebar() {
 
             {/* Bottom */}
             <div className="sidebar-bottom" style={{ width: '100%', padding: '0 20px', marginTop: 'auto', marginBottom: 20 }}>
-                <div className="sidebar-user-card" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', cursor: 'pointer' }}>
+                <div onClick={() => navigate('/settings')} className="sidebar-user-card" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', cursor: 'pointer' }}>
                     <div className="sidebar-avatar" title="Your Account" style={{ width: 32, height: 32, flexShrink: 0 }}>
-                        <span>JD</span>
+                        <span>{user?.email?.[0]?.toUpperCase() || 'JD'}</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                        <span className="font-semibold text-sm" style={{ color: '#fff', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>Jane Doe</span>
-                        <span className="text-xs text-muted">Admin</span>
+                        <span className="font-semibold text-sm" style={{ color: '#fff', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user?.email || 'Jane Doe'}</span>
+                        <span className="text-xs text-muted">{user?.role || 'Admin'}</span>
                     </div>
                 </div>
             </div>

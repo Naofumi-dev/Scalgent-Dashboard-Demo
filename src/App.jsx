@@ -6,6 +6,7 @@ import WorkflowBuilder from './pages/WorkflowBuilder'
 import Analytics from './pages/Analytics'
 import Contacts from './pages/Contacts'
 import Tasks from './pages/Tasks'
+import ComingSoon from './pages/ComingSoon'
 import Login from './pages/Login'
 import { AuthProvider } from './lib/AuthContext'
 import PrivateRoute from './lib/PrivateRoute'
@@ -33,6 +34,8 @@ export default function App() {
                                                 <Route path="/analytics" element={<Analytics />} />
                                                 <Route path="/contacts" element={<Contacts />} />
                                                 <Route path="/tasks" element={<Tasks />} />
+                                                <Route path="/map" element={<ComingSoon title="Geospatial Map" />} />
+                                                <Route path="/settings" element={<ComingSoon title="Account Settings" />} />
                                             </Routes>
                                         </main>
                                     </div>

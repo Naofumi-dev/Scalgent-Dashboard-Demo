@@ -4,13 +4,14 @@ import { Send, Plus, ArrowUpRight, Mic } from 'lucide-react'
 import './AILeadCard.css'
 
 const SUGGESTIONS = [
+    "What's my projected Q2 sales?",
     'Show labor cost',
-    'Initiate strategy planning',
     'Churn risk analysis',
     'Top performing workflow',
 ]
 
 const BOT_RESPONSES = {
+    'projected q2 sales': '📈 Projected Q2 Sales: $142,500 (+18% QoQ).\n\nKey Drivers:\n• "Lead Nurture" workflow is recovering $12k/mo in abandoned carts.\n• Churn dropped by 4% due to automated re-engagement.\n\nRecommendation: Increase ad spend on the VIP Nurture funnel by 15% to push Q2 projections over $150k.',
     'show labor cost': 'Labor cost is currently at 28% of gross revenue — 4% above target. The main driver is overtime in the nurture sequence. I recommend capping batch sends to business hours.',
     'initiate strategy planning': 'I\'ve queued a strategy session. Key focus areas: (1) AOV recovery via upsell flows, (2) labor cost reduction via automation, (3) churn prevention for at-risk accounts.',
     'churn risk analysis': '14 contacts show >70% churn probability. Top signals: 21+ days inactive, no email opens in 3 weeks, pipeline stall. Recommended: trigger re-engagement workflow now.',
@@ -97,7 +98,7 @@ export default function AILeadCard() {
                                 />
                             </div>
                         )}
-                        <div className="ai-bubble">
+                        <div className="ai-bubble" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>
                             {msg.text}
                             {msg.actions && (
                                 <div className="ai-actions">

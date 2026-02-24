@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Search, RefreshCw, ChevronDown, Bell, LogOut, Download, Shield } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
 import './TopBar.css'

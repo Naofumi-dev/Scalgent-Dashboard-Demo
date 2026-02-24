@@ -8,7 +8,6 @@ import './Sidebar.css'
 const navItems = [
     { to: '/overview', icon: LayoutDashboard, label: 'Overview' },
     { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
-    { to: '/visualizer', icon: Box, label: '3D View' },
     { to: '/builder', icon: GitBranch, label: 'Builder' },
     { to: '/analytics', icon: BarChart2, label: 'Analytics' },
     { to: '/contacts', icon: Users, label: 'Contacts' },
@@ -20,8 +19,11 @@ export default function Sidebar() {
     return (
         <nav className="sidebar">
             {/* Logo */}
-            <div className="sidebar-logo">
-                <span className="sidebar-logo-text">Fs</span>
+            <div className="sidebar-header" style={{ width: '100%', padding: '0 20px', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, marginTop: 8 }}>
+                <div className="sidebar-logo">
+                    <span className="sidebar-logo-text">Fs</span>
+                </div>
+                <span className="font-black text-lg" style={{ color: '#fff', letterSpacing: '-0.5px' }}>FlowSight</span>
             </div>
 
             {/* Nav */}
@@ -33,20 +35,25 @@ export default function Sidebar() {
                         className={({ isActive }) =>
                             `sidebar-item${isActive ? ' active' : ''}`
                         }
-                        title={label}
                     >
-                        <Icon size={20} strokeWidth={1.8} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 16px', width: '100%' }}>
+                            <Icon size={18} strokeWidth={2} style={{ flexShrink: 0 }} />
+                            <span className="sidebar-label">{label}</span>
+                        </div>
                     </NavLink>
                 ))}
             </div>
 
             {/* Bottom */}
-            <div className="sidebar-bottom">
-                <button className="sidebar-item" title="Add">
-                    <Plus size={20} strokeWidth={2} />
-                </button>
-                <div className="sidebar-avatar" title="Your Account">
-                    <span>JD</span>
+            <div className="sidebar-bottom" style={{ width: '100%', padding: '0 20px', marginTop: 'auto', marginBottom: 20 }}>
+                <div className="sidebar-user-card" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', cursor: 'pointer' }}>
+                    <div className="sidebar-avatar" title="Your Account" style={{ width: 32, height: 32, flexShrink: 0 }}>
+                        <span>JD</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                        <span className="font-semibold text-sm" style={{ color: '#fff', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>Jane Doe</span>
+                        <span className="text-xs text-muted">Admin</span>
+                    </div>
                 </div>
             </div>
         </nav>

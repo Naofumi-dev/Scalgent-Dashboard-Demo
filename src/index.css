@@ -42,7 +42,7 @@
   --shadow-glow-coral: 0 0 20px rgba(232, 97, 74, 0.25);
   --shadow-glow-purple: 0 0 20px rgba(108, 92, 231, 0.25);
 
-  --sidebar-w: 68px;
+  --sidebar-w: 220px;
   --topbar-h: 60px;
 
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);

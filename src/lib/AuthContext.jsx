@@ -12,7 +12,8 @@ export function AuthProvider({ children }) {
             // Only update if we aren't currently using a guest session
             setUser(prev => {
                 if (prev && prev.isGuest) return prev;
-                return currentUser;
+                if (!currentUser) return null;
+                return Object.assign(currentUser, { role: 'Admin' })
             })
             setLoading(false)
         })
@@ -27,7 +28,8 @@ export function AuthProvider({ children }) {
             displayName: 'Demo Visitor',
             email: 'demo@flowsight.app',
             photoURL: 'https://ui-avatars.com/api/?name=Demo+Visitor&background=6366f1&color=fff',
-            isGuest: true
+            isGuest: true,
+            role: 'Viewer'
         })
     }
 

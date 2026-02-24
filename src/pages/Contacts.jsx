@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { mockContacts } from '../lib/mockData'
-import { Search, Filter, Mail, Phone, Tag } from 'lucide-react'
+import { Search, Filter, Mail, Phone, Tag, Download, Sparkles, CheckCircle2 } from 'lucide-react'
 import './Contacts.css'
 
 const STAGE_COLORS = {
@@ -48,6 +48,28 @@ export default function Contacts() {
             .catch(err => console.error('Failed to fetch contacts:', err))
     }, [])
 
+    const [enriching, setEnriching] = useState(false)
+    const [enrichedData, setEnrichedData] = useState({})
+    const [toast, setToast] = useState(null)
+
+    const handleEnrich = (contactId) => {
+        if (enriching || enrichedData[contactId]) return
+        setEnriching(true)
+        setTimeout(() => {
+            setEnrichedData(prev => ({
+                ...prev,
+                [contactId]: {
+                    linkedin: 'linkedin.com/in/' + contactId,
+                    companySize: '50-200',
+                    industry: 'SaaS / B2B'
+                }
+            }))
+            setEnriching(false)
+            setToast('Enriched lead synced to Airtable Operations board.')
+            setTimeout(() => setToast(null), 4000)
+        }, 1500)
+    }
+
     const filtered = contacts.filter(c =>
         c.name?.toLowerCase().includes(search.toLowerCase()) ||
         c.email?.toLowerCase().includes(search.toLowerCase())
@@ -68,6 +90,7 @@ export default function Contacts() {
                         onChange={e => setSearch(e.target.value)}
                         className="contacts-search-input"
                     />
+                    <button className="btn btn-ghost btn-icon" title="Export CSV"><Download size={13} /></button>
                     <button className="btn btn-ghost btn-icon"><Filter size={13} /></button>
                 </div>
 
@@ -141,6 +164,19 @@ export default function Contacts() {
                             </div>
                             <div className="text-sm" style={{ color: '#fff' }}>{contact.lastActivity}</div>
                         </div>
+                        {enrichedData[contact.id] && (
+                            <div className="card card-dark contact-info-card" style={{ gridColumn: '1 / -1', background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.2)' }}>
+                                <div className="flex items-center gap-2" style={{ marginBottom: 10 }}>
+                                    <Sparkles size={14} color="#a855f7" />
+                                    <span className="font-bold text-xs" style={{ letterSpacing: '0.08em', color: '#f3e8ff' }}>AI ENRICHED EXTERNAL DATA</span>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="flex flex-col"><span className="text-xs text-muted">Industry</span><span className="text-sm" style={{ color: '#fff' }}>{enrichedData[contact.id].industry}</span></div>
+                                    <div className="flex flex-col"><span className="text-xs text-muted">Company Size</span><span className="text-sm" style={{ color: '#fff' }}>{enrichedData[contact.id].companySize}</span></div>
+                                    <div className="flex flex-col"><span className="text-xs text-muted">LinkedIn</span><a href={`https://${enrichedData[contact.id].linkedin}`} target="_blank" className="text-sm" style={{ color: '#60a5fa' }}>{enrichedData[contact.id].linkedin}</a></div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Timeline */}
@@ -165,11 +201,31 @@ export default function Contacts() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 relative">
                         <button className="btn btn-coral" style={{ flex: 1 }}>📧 Send Email</button>
                         <button className="btn btn-purple" style={{ flex: 1 }}>🤖 Add to Workflow</button>
-                        <button className="btn btn-ghost" style={{ flex: 1 }}>📋 Add Note</button>
+                        <button
+                            className="btn btn-ghost"
+                            style={{ flex: 1, color: enrichedData[contact.id] ? '#10b981' : '#a855f7', borderColor: enrichedData[contact.id] ? '#10b981' : 'rgba(168,85,247,0.3)' }}
+                            onClick={() => handleEnrich(contact.id)}
+                            disabled={enriching || enrichedData[contact.id]}
+                        >
+                            {enriching ? 'Enriching...' : enrichedData[contact.id] ? <><CheckCircle2 size={14} style={{ marginRight: 6 }} /> Enriched & Synced</> : <><Sparkles size={14} style={{ marginRight: 6 }} /> Enrich & Airtable Sync</>}
+                        </button>
                     </div>
+
+                    {toast && (
+                        <div style={{
+                            position: 'absolute', bottom: 30, right: 30,
+                            background: 'rgba(16, 185, 129, 0.15)', color: '#10b981',
+                            padding: '12px 24px', borderRadius: 12, border: '1px solid rgba(16, 185, 129, 0.3)',
+                            display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600,
+                            zIndex: 50, backdropFilter: 'blur(8px)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                            animation: 'fadeIn 0.3s ease-out'
+                        }}>
+                            <CheckCircle2 size={16} /> {toast}
+                        </div>
+                    )}
                 </div>
             )}
         </div>

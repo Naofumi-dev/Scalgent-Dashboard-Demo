@@ -283,6 +283,38 @@ Be concise (under 150 words), specific, and actionable. Reference GHL features w
     }
 })
 
+// ── Core Monitoring: 5-Minute Polling ─────────────────────
+setInterval(async () => {
+    console.log('[System] Running 5-minute data sync (GHL, n8n, Airtable)...')
+    try {
+        let ghlStatus = 'ok'
+        if (GHL_API_KEY && GHL_LOCATION_ID) {
+            const res = await fetchJSON(`https://services.leadconnectorhq.com/contacts/?locationId=${GHL_LOCATION_ID}&limit=1`, { headers: ghlHeaders() })
+            if (res.status !== 200) ghlStatus = 'error'
+        }
+
+        let airtableStatus = 'ok'
+        if (AIRTABLE_PAT && AIRTABLE_BASE_ID) {
+            const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TASKS_TABLE)}?maxRecords=1`
+            const res = await fetchJSON(url, { headers: { 'Authorization': `Bearer ${AIRTABLE_PAT}` } })
+            if (res.status !== 200) airtableStatus = 'error'
+        }
+
+        if (ghlStatus === 'error' || airtableStatus === 'error') {
+            io.emit('system:alert', {
+                type: 'sync_failure',
+                message: `Data sync partially failed. GHL: ${ghlStatus}, Airtable: ${airtableStatus}`,
+                severity: 'warning'
+            })
+        } else {
+            console.log('[System] Sync complete.')
+        }
+    } catch (e) {
+        console.error('[System] CRON polling error:', e)
+        io.emit('system:alert', { type: 'sync_error', message: 'Critical backend mapping failure during 5-minute CRON sync.', severity: 'error' })
+    }
+}, 300000)
+
 // ── Socket.io ─────────────────────────────────────────────
 io.on('connection', (socket) => {
     console.log('[Socket.io]  connected:', socket.id)
@@ -295,20 +327,8 @@ io.on('connection', (socket) => {
         geminiConnected: !!GEMINI_API_KEY,
     })
 
-    // Simulate real-time GHL events (demo — replace with real GHL webhooks)
-    const interval = setInterval(() => {
-        const events = [
-            { type: 'contact.updated', message: 'Contact stage updated', severity: 'info' },
-            { type: 'opportunity.created', message: 'New opportunity in CRM', severity: 'success' },
-            { type: 'workflow.completed', message: 'Automation run complete', severity: 'success' },
-        ]
-        const ev = events[Math.floor(Math.random() * events.length)]
-        io.emit('ghl:event', { ...ev, id: Date.now(), timestamp: new Date().toISOString() })
-    }, 30000)
-
     socket.on('disconnect', () => {
         console.log('[Socket.io] disconnected:', socket.id)
-        clearInterval(interval)
     })
 })
 

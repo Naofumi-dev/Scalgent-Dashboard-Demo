@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Calendar, User, AlertCircle, Clock } from 'lucide-react'
+import { Calendar, User, AlertCircle, Clock, Download } from 'lucide-react'
 import './Tasks.css'
 
 const COLUMNS = [
@@ -53,9 +53,14 @@ export default function Tasks() {
                     <h1 className="font-black text-2xl" style={{ color: '#fff' }}>Projects & Tasks</h1>
                     <p className="text-sm text-secondary">Live sync with Scalgent Ops Tracker (Airtable)</p>
                 </div>
-                <button className="btn btn-purple">
-                    <span style={{ marginRight: 6 }}>+</span> New Task
-                </button>
+                <div className="flex gap-2">
+                    <button className="btn btn-ghost" title="Export Tasks (CSV)">
+                        <Download size={15} style={{ marginRight: 6 }} /> Export
+                    </button>
+                    <button className="btn btn-purple">
+                        <span style={{ marginRight: 6 }}>+</span> New Task
+                    </button>
+                </div>
             </div>
 
             <div className="kanban-board">

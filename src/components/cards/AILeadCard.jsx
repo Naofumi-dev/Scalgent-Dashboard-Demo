@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { mockAIMessages } from '../../lib/mockData'
 import { Send, Plus, ArrowUpRight, Mic } from 'lucide-react'
+import { BarChart, Bar, ResponsiveContainer, Tooltip, XAxis } from 'recharts'
 import './AILeadCard.css'
 
 const SUGGESTIONS = [
@@ -11,11 +12,18 @@ const SUGGESTIONS = [
 ]
 
 const BOT_RESPONSES = {
-    'projected q2 sales': '📈 Projected Q2 Sales: $142,500 (+18% QoQ).\n\nKey Drivers:\n• "Lead Nurture" workflow is recovering $12k/mo in abandoned carts.\n• Churn dropped by 4% due to automated re-engagement.\n\nRecommendation: Increase ad spend on the VIP Nurture funnel by 15% to push Q2 projections over $150k.',
-    'show labor cost': 'Labor cost is currently at 28% of gross revenue — 4% above target. The main driver is overtime in the nurture sequence. I recommend capping batch sends to business hours.',
-    'initiate strategy planning': 'I\'ve queued a strategy session. Key focus areas: (1) AOV recovery via upsell flows, (2) labor cost reduction via automation, (3) churn prevention for at-risk accounts.',
-    'churn risk analysis': '14 contacts show >70% churn probability. Top signals: 21+ days inactive, no email opens in 3 weeks, pipeline stall. Recommended: trigger re-engagement workflow now.',
-    'top performing workflow': '"Lead Nurture Sequence" leads with 94% success rate and 8 active nodes. It generates an estimated $34K/mo pipeline value. Consider cloning it for your enterprise segment.',
+    'projected q2 sales': {
+        text: '📈 Projected Q2 Sales: $142,500 (+18% QoQ).\n\nKey Drivers:\n• "Lead Nurture" workflow is recovering $12k/mo in abandoned carts.\n• Churn dropped by 4% due to automated re-engagement.\n\nRecommendation: Increase ad spend on the VIP Nurture funnel by 15% to push Q2 projections over $150k.',
+        chartData: [
+            { name: 'Apr', val: 45000 },
+            { name: 'May', val: 56000 },
+            { name: 'Jun', val: 68000 }
+        ]
+    },
+    'show labor cost': { text: 'Labor cost is currently at 28% of gross revenue — 4% above target. The main driver is overtime in the nurture sequence. I recommend capping batch sends to business hours.' },
+    'initiate strategy planning': { text: 'I\'ve queued a strategy session. Key focus areas: (1) AOV recovery via upsell flows, (2) labor cost reduction via automation, (3) churn prevention for at-risk accounts.' },
+    'churn risk analysis': { text: '14 contacts show >70% churn probability. Top signals: 21+ days inactive, no email opens in 3 weeks, pipeline stall. Recommended: trigger re-engagement workflow now.' },
+    'top performing workflow': { text: '"Lead Nurture Sequence" leads with 94% success rate and 8 active nodes. It generates an estimated $34K/mo pipeline value. Consider cloning it for your enterprise segment.' },
 }
 
 export default function AILeadCard() {
@@ -68,8 +76,8 @@ export default function AILeadCard() {
             // Local fallback when backend is not running
             const key = userMsg.toLowerCase()
             const response = Object.entries(BOT_RESPONSES).find(([k]) => key.includes(k))
-            const reply = response?.[1] || `Analyzing GHL data for "${userMsg}"... Pipeline health is stable. Want a detailed breakdown?`
-            setMessages(m => [...m, { id: Date.now() + 1, role: 'assistant', text: reply }])
+            const replyObj = response?.[1] || { text: `Analyzing GHL data for "${userMsg}"... Pipeline health is stable. Want a detailed breakdown?` }
+            setMessages(m => [...m, { id: Date.now() + 1, role: 'assistant', text: replyObj.text, chartData: replyObj.chartData }])
         } finally {
             setTyping(false)
         }
@@ -112,6 +120,17 @@ export default function AILeadCard() {
                                             {a === 'Show labor cost' ? '👋' : '📋'} {a}
                                         </button>
                                     ))}
+                                </div>
+                            )}
+                            {msg.chartData && (
+                                <div style={{ height: 100, width: '100%', marginTop: 12, marginBottom: 8 }}>
+                                    <ResponsiveContainer>
+                                        <BarChart data={msg.chartData} margin={{ top: 0, left: 0, right: 0, bottom: 0 }}>
+                                            <Tooltip contentStyle={{ background: '#1e1c26', border: 'none', borderRadius: 8, fontSize: 12, color: '#fff' }} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                                            <Bar dataKey="val" fill="#ec4899" radius={[4, 4, 0, 0]} />
+                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10 }} dy={5} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
                                 </div>
                             )}
                         </div>

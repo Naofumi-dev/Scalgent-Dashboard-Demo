@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import TopBar from './components/TopBar'
 import Overview from './pages/Overview'
-import WorkflowVisualizer from './pages/WorkflowVisualizer'
 import WorkflowBuilder from './pages/WorkflowBuilder'
 import Analytics from './pages/Analytics'
 import Contacts from './pages/Contacts'
@@ -30,7 +29,6 @@ export default function App() {
                                             <Routes>
                                                 <Route path="/" element={<Navigate to="/overview" replace />} />
                                                 <Route path="/overview" element={<Overview />} />
-                                                <Route path="/visualizer" element={<WorkflowVisualizer />} />
                                                 <Route path="/builder" element={<WorkflowBuilder />} />
                                                 <Route path="/analytics" element={<Analytics />} />
                                                 <Route path="/contacts" element={<Contacts />} />

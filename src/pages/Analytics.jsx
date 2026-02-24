@@ -1,9 +1,9 @@
 import {
-    LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+    LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area,
     XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend
 } from 'recharts'
 import { mockAnalytics } from '../lib/mockData'
-import { TrendingUp, TrendingDown } from 'lucide-react'
+import { TrendingUp, TrendingDown, Sparkles, ShieldAlert } from 'lucide-react'
 import './Analytics.css'
 
 const CHART_TOOLTIP_STYLE = {
@@ -12,7 +12,16 @@ const CHART_TOOLTIP_STYLE = {
 }
 
 export default function Analytics() {
-    const { leadsByDay, pipeline, kpis } = mockAnalytics
+    const { pipeline, kpis } = mockAnalytics
+
+    const revenueForecast = [
+        { month: 'Jan', actual: 45000, projected: 45000 },
+        { month: 'Feb', actual: 52000, projected: 52000 },
+        { month: 'Mar', actual: 48000, projected: 48000 },
+        { month: 'Apr', actual: 61000, projected: 61000 },
+        { month: 'May', projected: 69000 },
+        { month: 'Jun', projected: 78000 },
+    ]
 
     return (
         <div className="analytics-layout animate-fade-in">
@@ -37,18 +46,31 @@ export default function Analytics() {
 
             {/* Charts row */}
             <div className="charts-row">
-                {/* Lead volume */}
-                <div className="card card-dark chart-card">
-                    <div className="font-bold text-sm" style={{ color: '#fff', marginBottom: 16 }}>Lead Volume & Conversions</div>
+                {/* ML Revenue Forecast */}
+                <div className="card card-dark chart-card" style={{ flex: 2 }}>
+                    <div className="flex items-center gap-2 mb-4" style={{ marginBottom: 16 }}>
+                        <Sparkles size={16} color="#a855f7" />
+                        <div className="font-bold text-sm" style={{ color: '#fff' }}>AI Revenue Forecast (6mo)</div>
+                    </div>
                     <ResponsiveContainer width="100%" height={200}>
-                        <BarChart data={leadsByDay} barGap={4}>
+                        <AreaChart data={revenueForecast}>
+                            <defs>
+                                <linearGradient id="actualGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.5} />
+                                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                                </linearGradient>
+                                <linearGradient id="projGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.4} />
+                                    <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                            <XAxis dataKey="date" tick={{ fill: '#8b8fa8', fontSize: 11 }} axisLine={false} tickLine={false} />
+                            <XAxis dataKey="month" tick={{ fill: '#8b8fa8', fontSize: 11 }} axisLine={false} tickLine={false} />
                             <YAxis tick={{ fill: '#8b8fa8', fontSize: 11 }} axisLine={false} tickLine={false} />
                             <Tooltip {...CHART_TOOLTIP_STYLE} />
-                            <Bar dataKey="leads" fill="#6c5ce7" radius={[4, 4, 0, 0]} name="Leads" />
-                            <Bar dataKey="converted" fill="#00b894" radius={[4, 4, 0, 0]} name="Converted" />
-                        </BarChart>
+                            <Area type="monotone" dataKey="actual" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#actualGrad)" name="Actual Revenue" />
+                            <Area type="monotone" dataKey="projected" stroke="#a855f7" strokeDasharray="5 5" strokeWidth={3} fillOpacity={1} fill="url(#projGrad)" name="AI Projected" />
+                        </AreaChart>
                     </ResponsiveContainer>
                 </div>
 
@@ -79,7 +101,10 @@ export default function Analytics() {
 
             {/* Lead scoring table */}
             <div className="card card-dark">
-                <div className="font-bold text-sm" style={{ color: '#fff', marginBottom: 14 }}>AI Lead Scoring</div>
+                <div className="flex items-center gap-2" style={{ marginBottom: 14 }}>
+                    <ShieldAlert size={16} color="#ec4899" />
+                    <div className="font-bold text-sm" style={{ color: '#fff' }}>Predictive Churn Risk Ledger</div>
+                </div>
                 <table className="lead-table">
                     <thead>
                         <tr>

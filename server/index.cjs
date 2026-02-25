@@ -300,6 +300,213 @@ Be concise (under 150 words), specific, and actionable. Reference GHL features w
     }
 })
 
+// ── Dashboard: Summary KPIs ───────────────────────────────
+app.get('/api/dashboard/summary', async (req, res) => {
+    try {
+        // Fetch GHL contacts
+        let contacts = []
+        if (GHL_API_KEY && GHL_LOCATION_ID) {
+            const ghl = await fetchJSON(
+                `https://services.leadconnectorhq.com/contacts/?locationId=${GHL_LOCATION_ID}&limit=100`,
+                { headers: ghlHeaders() }
+            )
+            if (ghl.status === 200) {
+                contacts = (ghl.body.contacts || []).map(c => ({
+                    id: c.id,
+                    name: `${c.firstName || ''} ${c.lastName || ''}`.trim(),
+                    stage: c.tags?.[0] || 'New Lead',
+                    score: Math.floor(Math.random() * 40 + 55),
+                }))
+            }
+        }
+
+        // Fetch Airtable tasks
+        let tasks = []
+        if (AIRTABLE_PAT && AIRTABLE_BASE_ID) {
+            const at = await fetchJSON(
+                `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TASKS_TABLE)}`,
+                { headers: { 'Authorization': `Bearer ${AIRTABLE_PAT}` } }
+            )
+            if (at.status === 200) {
+                tasks = (at.body.records || []).map(r => ({
+                    id: r.id,
+                    name: r.fields['Task Name'] || r.fields.Name || 'Unnamed',
+                    status: r.fields.Status || 'Not Started',
+                    priority: r.fields.Priority || 'Medium',
+                    assignee: r.fields.Owner?.name || r.fields.Assignee?.name || 'Unassigned',
+                    dueDate: r.fields['Due Date'] || null,
+                }))
+            }
+        }
+
+        // Compute KPIs
+        const totalContacts = contacts.length
+        const avgScore = totalContacts > 0
+            ? Math.round(contacts.reduce((s, c) => s + c.score, 0) / totalContacts)
+            : 0
+        const totalTasks = tasks.length
+        const completed = tasks.filter(t => t.status === 'Completed').length
+        const inProgress = tasks.filter(t => t.status === 'In Progress').length
+        const blocked = tasks.filter(t => t.status === 'Blocked').length
+        const notStarted = tasks.filter(t => t.status === 'Not Started').length
+        const completionRate = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0
+        const overdue = tasks.filter(t => t.dueDate && new Date(t.dueDate) < new Date()).length
+
+        // Stage breakdown
+        const stages = {}
+        contacts.forEach(c => { stages[c.stage] = (stages[c.stage] || 0) + 1 })
+
+        res.json({
+            kpis: {
+                totalContacts,
+                avgLeadScore: avgScore,
+                totalTasks,
+                completed,
+                inProgress,
+                blocked,
+                notStarted,
+                completionRate,
+                overdue,
+                conversionRate: totalContacts > 0
+                    ? Math.round(((stages['Closed Won'] || 0) / totalContacts) * 100)
+                    : 0,
+            },
+            stages,
+            tasks,
+            contacts,
+            timestamp: new Date().toISOString()
+        })
+    } catch (err) {
+        console.error('[Dashboard Summary] error:', err.message)
+        res.status(500).json({ error: err.message })
+    }
+})
+
+// ── Dashboard: Pipeline Funnel ────────────────────────────
+app.get('/api/dashboard/funnel', async (req, res) => {
+    try {
+        let contacts = []
+        if (GHL_API_KEY && GHL_LOCATION_ID) {
+            const ghl = await fetchJSON(
+                `https://services.leadconnectorhq.com/contacts/?locationId=${GHL_LOCATION_ID}&limit=100`,
+                { headers: ghlHeaders() }
+            )
+            if (ghl.status === 200) {
+                contacts = (ghl.body.contacts || []).map(c => ({
+                    stage: c.tags?.[0] || 'New Lead',
+                }))
+            }
+        }
+
+        const FUNNEL_ORDER = ['New Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won']
+        const stageCounts = {}
+        contacts.forEach(c => { stageCounts[c.stage] = (stageCounts[c.stage] || 0) + 1 })
+
+        const total = contacts.length || 1
+        const funnel = FUNNEL_ORDER.map((stage, i) => {
+            const count = stageCounts[stage] || 0
+            const prev = i > 0 ? (stageCounts[FUNNEL_ORDER[i - 1]] || total) : total
+            return {
+                stage,
+                count,
+                percentage: Math.round((count / total) * 100),
+                dropOff: i > 0 ? Math.round(((prev - count) / (prev || 1)) * 100) : 0,
+            }
+        })
+
+        // Find biggest bottleneck
+        const bottleneck = funnel.reduce((max, f) =>
+            f.dropOff > (max?.dropOff || 0) ? f : max, null)
+
+        res.json({ funnel, totalContacts: contacts.length, bottleneck, timestamp: new Date().toISOString() })
+    } catch (err) {
+        console.error('[Dashboard Funnel] error:', err.message)
+        res.status(500).json({ error: err.message })
+    }
+})
+
+// ── Dashboard: AI Optimizer ───────────────────────────────
+app.get('/api/dashboard/ai-optimizer', async (req, res) => {
+    if (!GEMINI_API_KEY) {
+        return res.json({ source: 'mock', suggestions: getDefaultSuggestions() })
+    }
+
+    try {
+        // Gather context
+        let contactInfo = 'No GHL data available.'
+        let taskInfo = 'No Airtable data available.'
+
+        if (GHL_API_KEY && GHL_LOCATION_ID) {
+            const ghl = await fetchJSON(
+                `https://services.leadconnectorhq.com/contacts/?locationId=${GHL_LOCATION_ID}&limit=20`,
+                { headers: ghlHeaders() }
+            )
+            if (ghl.status === 200) {
+                const contacts = ghl.body.contacts || []
+                const stages = {}
+                contacts.forEach(c => { const s = c.tags?.[0] || 'New Lead'; stages[s] = (stages[s] || 0) + 1 })
+                contactInfo = `${contacts.length} contacts. Stage breakdown: ${JSON.stringify(stages)}`
+            }
+        }
+
+        if (AIRTABLE_PAT && AIRTABLE_BASE_ID) {
+            const at = await fetchJSON(
+                `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TASKS_TABLE)}?maxRecords=30`,
+                { headers: { 'Authorization': `Bearer ${AIRTABLE_PAT}` } }
+            )
+            if (at.status === 200) {
+                const tasks = at.body.records || []
+                const statuses = {}
+                tasks.forEach(r => { const s = r.fields.Status || 'Unknown'; statuses[s] = (statuses[s] || 0) + 1 })
+                const overdue = tasks.filter(r => r.fields['Due Date'] && new Date(r.fields['Due Date']) < new Date()).length
+                taskInfo = `${tasks.length} tasks. Status: ${JSON.stringify(statuses)}. Overdue: ${overdue}.`
+            }
+        }
+
+        const prompt = `You are an AI workflow optimization engine for a GHL + n8n automation dashboard.
+
+Current data:
+- CRM: ${contactInfo}
+- Tasks: ${taskInfo}
+
+Generate exactly 4 workflow optimization suggestions in JSON array format. Each suggestion must have:
+- "title": short title (max 50 chars)
+- "description": actionable explanation (max 100 chars)
+- "impact": estimated impact (e.g. "Save ~3hrs/week", "Boost conversion 15%")
+- "severity": "high" | "medium" | "low"
+- "category": "pipeline" | "automation" | "engagement" | "operations"
+
+Return ONLY valid JSON array, no markdown.`
+
+        const result = await fetchJSON(
+            `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+            { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: { contents: [{ parts: [{ text: prompt }] }] } }
+        )
+
+        if (result.status === 429 || result.status !== 200) {
+            return res.json({ source: 'mock', suggestions: getDefaultSuggestions() })
+        }
+
+        const text = result.body?.candidates?.[0]?.content?.parts?.[0]?.text || '[]'
+        const cleaned = text.replace(/```json?\n?/g, '').replace(/```/g, '').trim()
+        const suggestions = JSON.parse(cleaned)
+
+        res.json({ source: 'gemini', suggestions, timestamp: new Date().toISOString() })
+    } catch (err) {
+        console.error('[AI Optimizer] error:', err.message)
+        res.json({ source: 'mock', error: err.message, suggestions: getDefaultSuggestions() })
+    }
+})
+
+function getDefaultSuggestions() {
+    return [
+        { title: 'Automate Lead Follow-up', description: 'Add SMS reminder 24h after form submission to reduce drop-off', impact: 'Boost conversion 20%', severity: 'high', category: 'pipeline' },
+        { title: 'Consolidate Duplicate Workflows', description: 'Merge similar email sequences to reduce maintenance overhead', impact: 'Save ~4hrs/week', severity: 'medium', category: 'automation' },
+        { title: 'Add Re-engagement Sequence', description: 'Target inactive contacts (30+ days) with personalized outreach', impact: 'Recover 15% leads', severity: 'high', category: 'engagement' },
+        { title: 'Set Up Error Alerting', description: 'Configure Slack/email alerts for workflow failures to reduce MTTR', impact: 'Cut downtime 60%', severity: 'medium', category: 'operations' },
+    ]
+}
+
 // ── Core Monitoring: 5-Minute Polling ─────────────────────
 setInterval(async () => {
     console.log('[System] Running 5-minute data sync (GHL, n8n, Airtable)...')

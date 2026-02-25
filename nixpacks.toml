@@ -1,14 +1,11 @@
-[providers]
-  node = "v18.x"
+# Force Node.js environment for Railway/Nixpacks
+# This file explicitly tells Nixpacks to use Node.js
 
 [phases.setup]
-  nixPkgs = ["nodejs-18_x"]
+nixPkgs = ["nodejs-18_x", "npm-9_x"]
 
 [phases.install]
-  cmds = ["npm install"]
-
-[phases.build]
-  cmds = []
+cmds = ["npm install"]
 
 [start]
-  cmd = "npm run server"
+cmd = "node server/index.cjs"

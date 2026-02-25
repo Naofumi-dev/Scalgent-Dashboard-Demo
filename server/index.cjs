@@ -27,13 +27,14 @@ const ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://localhost:4173',
     'https://scalgent-dashboard-demo.netlify.app',
+    'https://scalgent-dashboard-demo.vercel.app',
 ]
 
 const corsOptions = {
     origin: (origin, callback) => {
         // Allow requests with no origin (server-to-server, curl, etc.)
         if (!origin) return callback(null, true)
-        if (ALLOWED_ORIGINS.includes(origin) || origin.endsWith('.onrender.com') || origin.endsWith('.netlify.app')) {
+        if (ALLOWED_ORIGINS.includes(origin) || origin.endsWith('.onrender.com') || origin.endsWith('.netlify.app') || origin.endsWith('.vercel.app')) {
             return callback(null, true)
         }
         callback(null, false)

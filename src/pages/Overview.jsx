@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react'
-import KPIHeroRow from '../components/overview/KPIHeroRow'
-import ProcessFunnel from '../components/overview/ProcessFunnel'
-import WorkflowHealthGrid from '../components/overview/WorkflowHealthGrid'
-import AIOptimizerPanel from '../components/overview/AIOptimizerPanel'
-import AnomalyFeed from '../components/overview/AnomalyFeed'
-import PredictiveSimulator from '../components/overview/PredictiveSimulator'
-import AILeadCard from '../components/cards/AILeadCard'
+import TotalLeadsCard from '../components/overview/TotalLeadsCard'
+import UptimeCard from '../components/overview/UptimeCard'
+import ForecastRevenueCard from '../components/overview/ForecastRevenueCard'
+import RecentLogsList from '../components/overview/RecentLogsList'
+import ErrorBreakdownChart from '../components/overview/ErrorBreakdownChart'
 import './Overview.css'
 
 export default function Overview() {
@@ -29,31 +27,22 @@ export default function Overview() {
     }, [])
 
     return (
-        <div className="overview-v2">
-            {/* Row 1: KPI Hero Cards */}
-            <KPIHeroRow kpis={summary?.kpis} loading={loading} />
-
-            {/* Row 2: Main content grid */}
-            <div className="overview-main-grid">
-                <div className="overview-left-col">
-                    <ProcessFunnel
-                        funnel={funnel?.funnel}
-                        totalContacts={funnel?.totalContacts}
-                        bottleneck={funnel?.bottleneck}
-                        loading={loading}
-                    />
-                    <WorkflowHealthGrid tasks={summary?.tasks} loading={loading} />
-                </div>
-                <div className="overview-right-col">
-                    <AIOptimizerPanel />
-                    <AnomalyFeed tasks={summary?.tasks} contacts={summary?.contacts} />
-                </div>
+        <div className="overview-cashmate">
+            {/* Top Row: Key Metrics */}
+            <div className="overview-top-row">
+                <TotalLeadsCard funnel={funnel} loading={loading} />
+                <UptimeCard summary={summary} loading={loading} />
+                <ForecastRevenueCard summary={summary} loading={loading} />
             </div>
 
-            {/* Row 3: Intelligence panel */}
-            <div className="overview-intel-grid">
-                <PredictiveSimulator kpis={summary?.kpis} />
-                <AILeadCard />
+            {/* Main Content Area */}
+            <div className="overview-main-area">
+                <div className="overview-left-col">
+                    <RecentLogsList tasks={summary?.tasks} loading={loading} />
+                </div>
+                <div className="overview-right-col">
+                    <ErrorBreakdownChart summary={summary} loading={loading} />
+                </div>
             </div>
         </div>
     )

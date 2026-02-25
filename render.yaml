@@ -1,0 +1,25 @@
+# render.yaml — Render Blueprint for FlowSight Backend
+# This auto-configures the web service when connected to Render
+
+services:
+  - type: web
+    name: flowsight-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server/index.cjs
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GHL_API_KEY
+        sync: false
+      - key: GHL_LOCATION_ID
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: AIRTABLE_PAT
+        sync: false
+      - key: AIRTABLE_BASE_ID
+        sync: false
+      - key: AIRTABLE_TASKS_TABLE
+        value: Tasks

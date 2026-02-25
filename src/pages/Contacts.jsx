@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { mockContacts } from '../lib/mockData'
-import { Search, Filter, Mail, Phone, Tag, Download, Sparkles, CheckCircle2 } from 'lucide-react'
+import { Search, Filter, Mail, Phone, Tag, Download, Sparkles, CheckCircle2, RefreshCw } from 'lucide-react'
 import './Contacts.css'
 
 const STAGE_COLORS = {
@@ -34,7 +33,8 @@ function ScoreRing({ score }) {
 export default function Contacts() {
     const [search, setSearch] = useState('')
     const [selected, setSelected] = useState(null)
-    const [contacts, setContacts] = useState(mockContacts)
+    const [contacts, setContacts] = useState([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const apiUrl = import.meta.env.VITE_API_URL || ''
@@ -46,6 +46,7 @@ export default function Contacts() {
                 }
             })
             .catch(err => console.error('Failed to fetch contacts:', err))
+            .finally(() => setLoading(false))
     }, [])
 
     const [enriching, setEnriching] = useState(false)
